@@ -1,36 +1,49 @@
 const personaService = require('../services/persona.service');
 
-exports.getAll = (req, res) => {
-  personaService.getAll((err, results) => {
-    if (err) return res.status(500).json(err);
-    res.json(results);
-  });
+exports.getAll = async (req, res) => {
+  try {
+    const data = await personaService.getAll();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.getById = (req, res) => {
-  personaService.getById(req.params.id, (err, results) => {
-    if (err) return res.status(500).json(err);
-    res.json(results[0]);
-  });
+exports.getById = async (req, res) => {
+  try {
+    const persona = await personaService.getById(req.params.id);
+    if (!persona) return res.status(404).json({ mensaje: 'Persona no encontrada' });
+    res.json(persona);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.create = (req, res) => {
-  personaService.create(req.body, (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.json({ id: result.insertId, ...req.body });
-  });
+exports.create = async (req, res) => {
+  try {
+    const persona = await personaService.create(req.body);
+    res.json(persona);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.update = (req, res) => {
-  personaService.update(req.params.id, req.body, (err) => {
-    if (err) return res.status(500).json(err);
+exports.update = async (req, res) => {
+  try {
+    const persona = await personaService.update(req.params.id, req.body);
+    if (!persona) return res.status(404).json({ mensaje: 'Persona no encontrada' });
     res.json({ mensaje: 'Persona actualizada' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-exports.delete = (req, res) => {
-  personaService.delete(req.params.id, (err) => {
-    if (err) return res.status(500).json(err);
+exports.delete = async (req, res) => {
+  try {
+    const resultado = await personaService.delete(req.params.id);
+    if (!resultado) return res.status(404).json({ mensaje: 'Persona no encontrada' });
     res.json({ mensaje: 'Persona eliminada' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
