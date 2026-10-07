@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const sequelize = require('./config/db');
 
 const app = express();
 
@@ -10,6 +11,12 @@ const personaRoutes = require('./routes/persona.routes');
 app.use('/personas', personaRoutes);
 
 const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+
+sequelize.sync().then(() => {
+  console.log('BD conectada');
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Error de conexión:', err.message);
 });
